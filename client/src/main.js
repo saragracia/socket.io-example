@@ -49,25 +49,9 @@ function animate() {
 
 function moveY(incY) {
     bunny.position.y += incY
-
-    for(coinId in coins) {
-      if (isColision(bunny.position, coins[coinId])) {
-        var sprite = coins[coinId]
-        if(sprite) stage.removeChild(sprite)
-        delete coins[coinId]
-      }
-    }
 }
 function moveX(incX) {
     bunny.position.x += incX
-
-    for(coinId in coins) {
-      if (isColision(bunny.position, coins[coinId])) {
-        var sprite = coins[coinId]
-        if(sprite) stage.removeChild(sprite)
-        delete coins[coinId]
-      }
-    }
 }
 
 function isColision(posBunny, posCoin) {
@@ -102,6 +86,12 @@ socket.on('put_pick_up', function (pos) {
   sprite.position = pos
   pos.id = pos.x + '' + pos.y
   coins[pos.id] = sprite
+})
+
+socket.on('delete_coin', function (id) {
+  var sprite = coins[id]
+  if(sprite) stage.removeChild(sprite)
+  delete coins[id]
 })
 
 socket.on('connect', function () {

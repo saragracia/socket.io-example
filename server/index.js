@@ -10,6 +10,9 @@ io.on('connection', function (socket) {
   for(var bunnyId in bunnies) {
   	socket.emit('update_position', bunnies[bunnyId])
   }
+  for(var coinId in coins) {
+  	socket.emit('put_pick_up', coins[coinId])
+  }
   socket.on('disconnect', function () {
     console.log('disconnection', socket.id)
     delete bunnies[socket.id]
@@ -19,10 +22,16 @@ io.on('connection', function (socket) {
     pos.id = socket.id
     bunnies[socket.id] = pos
     socket.broadcast.emit('update_position', pos)
+    for(coinId in coins) {
+      if (isColision(pos, coins[coinId])) {
+      	delete coins[coinId]
+        io.sockets.emit('delete_coin', coinId)
+      }
+    }
   })
 })
 
-setInterval(putPickUp, 5000);
+setInterval(putPickUp, 3000);
 
 function putPickUp() {
 	var pos = {}
@@ -31,6 +40,11 @@ function putPickUp() {
 	pos.id = pos.x + '' + pos.y
 	coins[pos.id] = pos
 	io.sockets.emit('put_pick_up', pos)
+}
+
+function isColision(posBunny, posCoin) {
+  if(Math.abs(posBunny.x - posCoin.x) < 64 && Math.abs(posBunny.y - posCoin.y) < 64) return true
+  return false
 }
 
 console.log('server started on port', port)
