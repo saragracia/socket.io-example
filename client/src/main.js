@@ -36,17 +36,31 @@ function animate() {
     // start the timer for the next animation loop
     requestAnimationFrame(animate);
 
+    /*
+    var oldPos = {
+      x: bunny.position.x,
+      y: bunny.position.y
+    }
+    */
+    var oldPos = bunny.position.clone()
+
     // move bunny using keyboard keys
     if (keyboard.char('W')) bunny.position.y -= bunnySpeed
     if (keyboard.char('A')) bunny.position.x -= bunnySpeed
     if (keyboard.char('D')) bunny.position.x += bunnySpeed
     if (keyboard.char('S')) bunny.position.y += bunnySpeed
 
+    if (oldPos.x != bunny.position.x || oldPos.y != bunny.position.y) {
+      socket.emit('update_position', bunny.position)
+    }
+
     // this is the main render call that makes pixi draw your container and its children.
     renderer.render(stage);
 }
 
 socket.on('update_position', function (pos) {
+  // pos
+  // {x, y, id}
   var sprite = otherBunnies[pos.id]
   if (!sprite) {
     sprite = new PIXI.Sprite(bunnyTexture)
