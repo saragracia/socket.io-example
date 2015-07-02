@@ -1,3 +1,6 @@
+var KeyboardJS = require('./Keyboard.js')
+var keyboard = new KeyboardJS(false)
+
 var serverURL = 'localhost:9000'
 var socket = require('socket.io-client')(serverURL)
 
@@ -16,6 +19,7 @@ var bunnyTexture = PIXI.Texture.fromImage('bunny.png');
 var bunny = new PIXI.Sprite(bunnyTexture);
 global.bunny = bunny
 var otherBunnies = {}
+var bunnySpeed = 5
 
 // Setup the position and scale of the bunny
 bunny.position.x = Math.random() * 800
@@ -31,6 +35,13 @@ animate();
 function animate() {
     // start the timer for the next animation loop
     requestAnimationFrame(animate);
+
+    // move bunny using keyboard keys
+    if (keyboard.char('W')) bunny.position.y -= bunnySpeed
+    if (keyboard.char('A')) bunny.position.x -= bunnySpeed
+    if (keyboard.char('D')) bunny.position.x += bunnySpeed
+    if (keyboard.char('S')) bunny.position.y += bunnySpeed
+
     // this is the main render call that makes pixi draw your container and its children.
     renderer.render(stage);
 }
